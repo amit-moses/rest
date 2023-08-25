@@ -38,17 +38,25 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'product'
+    'product',
+    'corsheaders' #important to rest !!!!
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    "corsheaders.middleware.CorsMiddleware", #added this line after pip !!!! ----  python -m pip install django-cors-headers
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+#add the urls to give access !!!!
+CORS_ALLOWED_ORIGINS = [
+"http://127.0.0.1:5501",
+"http://127.0.0.1:5500",
 ]
 
 ROOT_URLCONF = 'project.urls'

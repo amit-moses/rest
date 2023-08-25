@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from rest_framework import status
 
 # Create your views here.
 from django.shortcuts import render
@@ -49,30 +50,36 @@ def add_get_all(request):
 
         all_products_json = ProductSerializer(all_products, many=True).data
         return Response(all_products_json)
-    elif request.methods == 'POST':
-        # this line parses the json from request
+    
+    elif request.method == 'POST':
+        print('abunafaha-------------------')
         data = JSONParser().parse(request)
-        # this line creates a serializer object from json data
         serializer = ProductSerializer(data=data)
-        # this line checkes validity of json data 
         if serializer.is_valid():
-            # the serializer.save - saves a new product object
             serializer.save()
-            # returns the object that was created including id
             return Response(serializer.data, status=201)
-        # if not valid. return errors.
-        return Response(serializer.errors, status=400)  
+        return Response(serializer.errors, status=400) 
 
 
 @api_view(["PUT","GET", "DELETE"])
 def one_prod(request, id):
     product = Product.objects.filter(pk = id)
+    if product: product = product.first()
+    else: return Response(status=status.HTTP_404_NOT_FOUND)
+
     if request.method == 'GET':
-        return Response(ProductSerializer(product, many = True).data)
+        return Response(ProductSerializer(product).data)
+    
     elif request.method == 'PUT':
-        pass
+        serializer = ProductSerializer(product, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
     elif request.method == 'DELETE':
-        pass
+        product.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
     
 
 @api_view()
