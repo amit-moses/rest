@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'product',
+    'rest_framework_simplejwt',
     'corsheaders' #important to rest !!!!
 ]
 
@@ -58,6 +59,12 @@ CORS_ALLOWED_ORIGINS = [
 "http://127.0.0.1:5501",
 "http://127.0.0.1:5500",
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
 
 ROOT_URLCONF = 'project.urls'
 

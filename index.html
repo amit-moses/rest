@@ -9,16 +9,32 @@
     <title>Document</title>
 </head>
 <body>
+    <form onSubmit="event.preventDefault(); login()" method="POST">
+        <input id="username" name="username" type="text">
+        <input id="password" name="password" type="password">
+        <input type="submit" value="log in">
+    </form>
+    <button onclick="getProducts()">Get Products</button>
     <div class="row" id="productsRow">
     </div>
 </body>
 <script>
-    // console.log("!!!!")
-    axios.get('http://127.0.0.1:8000/product').then(res => {
-        // console.log(res.data)
-        const products = res.data
-        const resultHTML = products.map(product => `<li>${product.name}</li>`)
+    function login(){
+        axios.post('http://127.0.0.1:8000/token/',{username: username.value, password: password.value})
+        .then(res => {
+            localStorage.setItem("token", res.data.access);
+            axios.defaults.headers.common["Authorization"] = `Bearer ${res.data.access}`;
+            console.log(res.data);
+            });
+    }
+
+    function getProducts(){
+        axios.get('http://127.0.0.1:8000/product').then(res => {
+        const products = res.data;
+        const resultHTML = products.map(product => `<li>${product.name}</li>`);
         productsRow.innerHTML = resultHTML.join(""); 
-    })
+        });
+    }
+    
 </script>
 </html>
