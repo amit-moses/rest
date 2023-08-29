@@ -39,8 +39,8 @@ in create_product we get a POST request containing a json
 
 
 @api_view(['GET', 'POST'])
-@authentication_classes([JWTAuthentication])
-@permission_classes([IsAuthenticated])
+# @authentication_classes([JWTAuthentication])
+# @permission_classes([IsAuthenticated])
 def add_get_all(request):
     if request.method == 'GET':
         search = request.GET.get('search')
