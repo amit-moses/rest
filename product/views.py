@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from rest_framework import status
-
+import json
 # Create your views here.
 from django.shortcuts import render
-from .models import Category, Product, Cart
+from .models import Category, Product, Cart, CartItem
 from .serializers import ProductSerializer, CategorySerializer, CartSerializer, CartItemSerializer
 # from django.views.decorators.csrf import csrf_exempt
 from rest_framework.response import Response
@@ -98,47 +98,22 @@ def categories(request):
     all_categories_json = CategorySerializer(all_categories, many=True).data
     return Response(all_categories_json)
 
-
-# @api_view(["PUT", "GET", "DELETE"])
-# def cart(request, id):
-#     cart = Cart.objects.filter(pk=id)
-#     if cart:
-#         return Response(CartSerializer(cart.first()).data)
-#     else:
-#         return Response(status=status.HTTP_404_NOT_FOUND)
-
 @api_view(["PUT", "GET", "DELETE"])
 def cart(request, id=0):
     cart = Cart.objects.filter(pk=id)
     if cart:
         cart = cart.first()
     elif id == 0:
-        serializer = CartSerializer(data={})
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=201)
-        return Response(serializer.errors, status=400)
-    else:
-         return Response(status=status.HTTP_404_NOT_FOUND)
+        cart = Cart()
+        cart.save()       
 
-    if request.method == 'GET':
-        return Response(CartSerializer(cart).data)
-
-    elif request.method == 'PUT':
-        data = JSONParser().parse(request)
-        cartitem = cartitem.objects.filter(product_id = data["product_id"])
-        if cartitem:
-            serializer = CartItemSerializer(cartitem.first(), data=data)
-        else: serializer = CartItemSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=201)
-        return Response(serializer.errors, status=400)
+    if request.method == 'PUT':
+        cart.updatecart(params=request.data)
 
     elif request.method == 'DELETE':
-        data = JSONParser().parse(request)
-        cartitem = cartitem.objects.filter(product_id = data["product_id"])
-        if cartitem:
-            cartitem.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        cart.deleteitem(params=request.data)
+    
+    if cart: return Response(CartSerializer(cart).data)
+    else: return Response(status=status.HTTP_404_NOT_FOUND)  
+
     

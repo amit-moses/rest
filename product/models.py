@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 
 
+
 class Category(models.Model):
     name = models.CharField(max_length=100, null=False)
     description = models.CharField(max_length=200)
@@ -23,7 +24,23 @@ class Cart(models.Model):
     is_paid = models.BooleanField(default=False)
     create_date = models.DateTimeField(default=timezone.now)
 
+    def deleteitem(self, params):
+        data = params
+        cartitem = self.cartitem.filter(product_id = data.get('product'))
+        if cartitem: cartitem.delete()
+            
+    def updatecart(self, params):
+        data = params
+        cartitem = self.cartitem.filter(product_id = data.get('product'))
+        if cartitem:
+            cartupdate = cartitem.first()
+            cartupdate.quantity += int(data.get('quantity'))
+            if cartupdate.quantity <= cartupdate.product.stock and cartupdate.quantity > 0: cartupdate.save()
+            elif cartupdate.quantity == 0: cartupdate.delete()
+        else: 
+            CartItem(product_id = data.get('product'), quantity=data.get('quantity'), cart_id = self.id).save()
+
 class CartItem(models.Model):
-    product = models.OneToOneField(Product, on_delete=models.CASCADE, primary_key=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE,related_name='cartitem')
     quantity = models.IntegerField(default=1)
