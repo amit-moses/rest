@@ -13,32 +13,6 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 
-@api_view()
-def products(request):
-    search = request.GET.get('search')
-    maxprice = request.GET.get('maxprice')
-    all_products = Product.objects.all()
-    # search all product that name contains search parameter
-    if search:
-        all_products = all_products.filter(name__contains=search)
-    # search all product that price <= maxprice (price__lte=maxprice)
-    if maxprice:
-        all_products = all_products.filter(price__lte=maxprice)
-
-    all_products_json = ProductSerializer(all_products, many=True).data
-    return Response(all_products_json)
-
-
-"""
-in create_product we get a POST request containing a json
- {
-    "name": "Picture Frame",
-    "price": "29.00",
-    "stock": 150
-}
-"""
-
-
 @api_view(['GET', 'POST'])
 # @authentication_classes([JWTAuthentication])
 # @permission_classes([IsAuthenticated])
@@ -46,7 +20,10 @@ def add_get_all(request):
     if request.method == 'GET':
         search = request.GET.get('search')
         maxprice = request.GET.get('maxprice')
+        category_filter = int(request.GET.get('category',0))
         all_products = Product.objects.all()
+        if category_filter:
+            all_products = all_products.filter(category=category_filter)
         # search all product that name contains search parameter
         if search:
             all_products = all_products.filter(name__contains=search)
