@@ -24,6 +24,12 @@ class Cart(models.Model):
     is_paid = models.BooleanField(default=False)
     create_date = models.DateTimeField(default=timezone.now)
 
+    def total_to_pay(self):
+        total_price = 0
+        for item in self.cartitem.all():
+            total_price += item.get_total()
+        return total_price
+    
     def deleteitem(self, params):
         data = params
         cartitem = self.cartitem.filter(product_id = data.get('product'))
@@ -44,3 +50,6 @@ class CartItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE,related_name='cartitem')
     quantity = models.IntegerField(default=1)
+
+    def get_total(self):
+        return self.quantity * self.product.price
