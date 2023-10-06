@@ -30,10 +30,8 @@ class Cart(models.Model):
             total_price += item.get_total()
         return total_price
     
-    def deleteitem(self, params):
-        data = params
-        cartitem = self.cartitem.filter(product_id = data.get('product'))
-        if cartitem: cartitem.delete()
+    def deleteitem(self):
+        self.cartitem.all().delete()
             
     def updatecart(self, params):
         data = params

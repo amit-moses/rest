@@ -88,7 +88,7 @@ def cart(request, id=0):
         cart.updatecart(params=request.data)
 
     elif request.method == 'DELETE':
-        cart.deleteitem(params=request.data)
+        cart.deleteitem()
     
     if cart: return Response(CartSerializer(cart).data)
     else: return Response(status=status.HTTP_404_NOT_FOUND)  
