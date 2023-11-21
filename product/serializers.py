@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Category, Product, CartItem, Cart
+from .models import Category, Product, CartItem, Cart, Promocode
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -17,6 +17,10 @@ class CategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = '__all__'
 
+class PromoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Promocode
+        fields = '__all__'
 
 class CartItemSerializer(serializers.ModelSerializer):
     product = ProductSerializer(many=False, read_only=True)
@@ -28,13 +32,16 @@ class CartItemSerializer(serializers.ModelSerializer):
 
 class CartSerializer(serializers.ModelSerializer):
     cartitem = CartItemSerializer(many=True, read_only=True)
+    promocode = PromoSerializer(many=False, read_only=True)
     total = serializers.SerializerMethodField()
+    total_before = serializers.SerializerMethodField()
     
     class Meta:
         model = Cart
         fields = '__all__'
 
-    
-
     def get_total(self, obj):
         return obj.total_to_pay()
+    
+    def get_total_before(self, obj):
+        return obj.total_before()

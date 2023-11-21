@@ -19,17 +19,31 @@ class Product(models.Model):
 
     def __str__(self):
         return f'{self.name}'
+    
+class Promocode(models.Model):
+    code = models.CharField(max_length=100, null=True, default=None)
+    used = models.BooleanField(default=False)
+    discount = models.IntegerField(default=0)
 
 class Cart(models.Model):
     is_paid = models.BooleanField(default=False)
     create_date = models.DateTimeField(default=timezone.now)
+    # promocode = models.CharField(max_length=100, null=True, default=None)
+    promocode = models.ForeignKey(Promocode, on_delete=models.CASCADE, null=True)
 
     def total_to_pay(self):
+        percent_to_pay = 100 - (self.promocode.discount if self.promocode else 0)
+        total_price = 0
+        for item in self.cartitem.all():
+            total_price += item.get_total()
+        return round(float(total_price) * (max(percent_to_pay,0) / 100),2)
+    
+    def total_before(self):
         total_price = 0
         for item in self.cartitem.all():
             total_price += item.get_total()
         return total_price
-    
+
     def deleteitem(self):
         self.cartitem.all().delete()
             

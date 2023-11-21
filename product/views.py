@@ -3,7 +3,7 @@ from rest_framework import status
 import json
 # Create your views here.
 from django.shortcuts import render
-from .models import Category, Product, Cart, CartItem
+from .models import Category, Product, Cart, CartItem, Promocode
 from .serializers import ProductSerializer, CategorySerializer, CartSerializer, CartItemSerializer
 # from django.views.decorators.csrf import csrf_exempt
 from rest_framework.response import Response
@@ -11,6 +11,7 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 from rest_framework.parsers import JSONParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from django.http import JsonResponse
 
 
 @api_view(['GET', 'POST'])
@@ -93,4 +94,18 @@ def cart(request, id=0):
     if cart: return Response(CartSerializer(cart).data)
     else: return Response(status=status.HTTP_404_NOT_FOUND)  
 
+
+@api_view(["POST"])
+def update_promo(request, id=0):
+    promo = JSONParser().parse(request).get('promocode')
+    print(promo)
+    cart = Cart.objects.filter(pk=id)
+    promocode = Promocode.objects.filter(code = promo).filter(used = False)
+    if cart:
+        cart = cart.first()
+        if promocode:
+            cart.promocode = promocode.first()
+            cart.save()
+            return JsonResponse({'res' : 1})
+    return JsonResponse({'res' : 0})
     
