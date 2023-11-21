@@ -21,7 +21,7 @@ def add_get_all(request):
     if request.method == 'GET':
         search = request.GET.get('search')
         maxprice = request.GET.get('maxprice')
-        category_filter = int(request.GET.get('category',0))
+        category_filter = int(request.GET.get('category', 0))
         all_products = Product.objects.all()
         if category_filter:
             all_products = all_products.filter(category=category_filter)
@@ -76,6 +76,7 @@ def categories(request):
     all_categories_json = CategorySerializer(all_categories, many=True).data
     return Response(all_categories_json)
 
+
 @api_view(["PUT", "GET", "DELETE"])
 def cart(request, id=0):
     cart = Cart.objects.filter(pk=id)
@@ -83,29 +84,33 @@ def cart(request, id=0):
         cart = cart.first()
     elif id == 0:
         cart = Cart()
-        cart.save()       
+        cart.save()
 
     if request.method == 'PUT':
         cart.updatecart(params=request.data)
 
     elif request.method == 'DELETE':
         cart.deleteitem()
-    
-    if cart: return Response(CartSerializer(cart).data)
-    else: return Response(status=status.HTTP_404_NOT_FOUND)  
+
+    if cart:
+        return Response(CartSerializer(cart).data)
+    else:
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(["POST"])
 def update_promo(request, id=0):
     promo = JSONParser().parse(request).get('promocode')
-    print(promo)
     cart = Cart.objects.filter(pk=id)
-    promocode = Promocode.objects.filter(code = promo).filter(used = False)
+    promocode = Promocode.objects.filter(code=promo).filter(used=False)
     if cart:
         cart = cart.first()
-        if promocode:
+        if promo == -1:
+            cart.promocode = None
+            cart.save()
+            return JsonResponse({'res': 3})
+        elif promocode:
             cart.promocode = promocode.first()
             cart.save()
-            return JsonResponse({'res' : 1})
-    return JsonResponse({'res' : 0})
-    
+            return JsonResponse({'res': 1})
+    return JsonResponse({'res': 0})
