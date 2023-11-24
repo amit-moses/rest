@@ -56,6 +56,7 @@ class Cart(models.Model):
             if self.promocode.used and not self.is_paid: 
                 self.promocode = None
                 self.save()
+        
 
     def updatecart(self, params):
         data = params
