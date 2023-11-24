@@ -61,7 +61,8 @@ CORS_ALLOWED_ORIGINS = [
 "http://127.0.0.1:5501",
 "http://127.0.0.1:5500",
 "http://localhost:3000",
-"https://amit-moses.github.io"
+"https://amit-moses.github.io",
+"https://shop-react.onrender.com"
 ]
 
 REST_FRAMEWORK = {
