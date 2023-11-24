@@ -54,7 +54,7 @@ class Cart(models.Model):
             cartupdate = cartitem.first()
             cartupdate.quantity += int(data.get('quantity'))
             if cartupdate.quantity <= cartupdate.product.stock and cartupdate.quantity > 0: cartupdate.save()
-            elif cartupdate.quantity == 0: cartupdate.delete()
+            elif cartupdate.quantity <= 0: cartupdate.delete()
         else: 
             CartItem(product_id = data.get('product'), quantity=data.get('quantity'), cart_id = self.id).save()
 
