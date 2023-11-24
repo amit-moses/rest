@@ -32,7 +32,11 @@ class Cart(models.Model):
     promocode = models.ForeignKey(Promocode, on_delete=models.CASCADE, null=True)
 
     def total_to_pay(self):
-        percent_to_pay = 100 - (self.promocode.discount if self.promocode else 0)
+        percent_to_pay = 100
+        if self.promocode:
+            if not self.promocode.used:
+                percent_to_pay -= self.promocode.discount
+
         total_price = 0
         for item in self.cartitem.all():
             total_price += item.get_total()
