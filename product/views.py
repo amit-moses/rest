@@ -108,9 +108,8 @@ def update_promo(request, id=0):
         if promo == -1:
             cart.promocode = None
             cart.save()
-            return Response(CartSerializer(cart).data)
         elif promocode:
             cart.promocode = promocode.first()
             cart.save()
-            return Response(CartSerializer(cart).data)
+        return Response(CartSerializer(cart).data)
     return JsonResponse({})
