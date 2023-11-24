@@ -50,7 +50,13 @@ class Cart(models.Model):
 
     def deleteitem(self):
         self.cartitem.all().delete()
-            
+
+    def promo_update(self): 
+        if self.promocode:
+            if self.promocode.used and not self.is_paid: 
+                self.promocode = None
+                self.save()
+
     def updatecart(self, params):
         data = params
         cartitem = self.cartitem.filter(product_id = data.get('product'))

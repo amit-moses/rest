@@ -28,9 +28,6 @@ SECRET_KEY = 'django-insecure-zcn9@#77akji@r(@e1-0@l#2c(!n90w9i13i4%+jk+5viafqnw
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -59,7 +56,7 @@ MIDDLEWARE = [
 
 MY_URL = 'shop-rest.onrender.com/'
 #add the urls to give access !!!!
-ALLOWED_HOSTS = ['shop-rest.onrender.com']
+ALLOWED_HOSTS = ['shop-rest.onrender.com', '127.0.0.1']
 CORS_ALLOWED_ORIGINS = [
 "http://127.0.0.1:5501",
 "http://127.0.0.1:5500",

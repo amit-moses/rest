@@ -82,6 +82,7 @@ def cart(request, id=0):
     cart = Cart.objects.filter(pk=id)
     if cart:
         cart = cart.first()
+        cart.promo_update()
     elif id == 0:
         cart = Cart()
         cart.save()
