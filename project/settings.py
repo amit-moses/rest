@@ -57,6 +57,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+MY_URL = 'shop-rest.onrender.com/'
 #add the urls to give access !!!!
 CORS_ALLOWED_ORIGINS = [
 "http://127.0.0.1:5501",
