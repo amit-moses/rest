@@ -63,7 +63,7 @@ CORS_ALLOWED_ORIGINS = [
 "http://localhost:3000",
 "https://amit-moses.github.io",
 "https://shop-react.onrender.com",
-"https://react-shop-jgrv.onrender.com/"
+"https://myreactshop.vercel.app"
 ]
 
 REST_FRAMEWORK = {
