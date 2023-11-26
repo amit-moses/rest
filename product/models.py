@@ -63,8 +63,9 @@ class Cart(models.Model):
         cartitem = self.cartitem.filter(product_id = data.get('product'))
         if cartitem:
             cartupdate = cartitem.first()
-            new_quantity = cartupdate.quantity + int(data.get('quantity'))
-            if 0 < new_quantity:
+            to_add = int(data.get('quantity'))
+            new_quantity = cartupdate.quantity + to_add
+            if 0 < new_quantity and 0 < to_add:
                 if new_quantity <= cartupdate.product.stock:
                     cartupdate.quantity = new_quantity 
                     cartupdate.save()
