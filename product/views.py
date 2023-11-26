@@ -128,6 +128,7 @@ def get_user_cart(request, id=0):
         if not cart.cartitem.all() and already_cart:
             btd = Cart.objects.filter(pk=already_cart)
             if btd: 
+                cart.delete()
                 cart = btd.first()
                 cart.buyer = myuser
                 cart.save()
