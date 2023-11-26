@@ -119,7 +119,6 @@ def update_promo(request, id=0):
 # @authentication_classes([JWTAuthentication])
 # @permission_classes([IsAuthenticated])
 def get_user_cart(request, id=0):
-    # already_cart = JSONParser().parse(request).get('cart_id')
     already_cart = request.GET.get('cart_id', 0)
     myuser = User.objects.filter(pk = id).first()
     cart = myuser.cart_set.all().filter(is_paid = False)
@@ -133,7 +132,7 @@ def get_user_cart(request, id=0):
                 cart.buyer = myuser
                 cart.save()
     else:
-        cart = Cart.objects.filter(pl=already_cart).first() if already_cart else Cart()
+        cart = Cart.objects.filter(pk=already_cart).first() if already_cart else Cart()
         cart.buyer = myuser
         cart.save()
     if cart:
