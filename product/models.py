@@ -35,7 +35,7 @@ class Cart(models.Model):
         percent_to_pay = 100
         if self.promocode:
             if not self.promocode.used:
-                percent_to_pay -= self.promocode.discount
+                percent_to_pay -= min(100,self.promocode.discount)
 
         total_price = 0
         for item in self.cartitem.all():
@@ -63,9 +63,8 @@ class Cart(models.Model):
         cartitem = self.cartitem.filter(product_id = data.get('product'))
         if cartitem:
             cartupdate = cartitem.first()
-            to_add = int(data.get('quantity'))
-            new_quantity = cartupdate.quantity + to_add
-            if 0 < new_quantity and 0 < to_add:
+            new_quantity = cartupdate.quantity + int(data.get('quantity'))
+            if 0 < new_quantity:
                 if new_quantity <= cartupdate.product.stock:
                     cartupdate.quantity = new_quantity 
                     cartupdate.save()
@@ -79,4 +78,5 @@ class CartItem(models.Model):
     quantity = models.IntegerField(default=1)
 
     def get_total(self):
-        return self.quantity * self.product.price
+        rtn = self.quantity * self.product.price
+        return rtn if 0<rtn else 0
