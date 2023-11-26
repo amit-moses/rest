@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 
 
@@ -28,8 +29,8 @@ class Promocode(models.Model):
 class Cart(models.Model):
     is_paid = models.BooleanField(default=False)
     create_date = models.DateTimeField(default=timezone.now)
-    # promocode = models.CharField(max_length=100, null=True, default=None)
     promocode = models.ForeignKey(Promocode, on_delete=models.CASCADE, null=True)
+    buyer = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 
     def total_to_pay(self):
         percent_to_pay = 100
@@ -51,6 +52,9 @@ class Cart(models.Model):
     def deleteitem(self):
         self.cartitem.all().delete()
 
+    def get_buyer(self):
+        return self.buyer.id if self.buyer else None
+    
     def promo_update(self): 
         if self.promocode:
             if self.promocode.used and not self.is_paid: 

@@ -35,11 +35,15 @@ class CartSerializer(serializers.ModelSerializer):
     promocode = PromoSerializer(many=False, read_only=True)
     total = serializers.SerializerMethodField()
     total_before = serializers.SerializerMethodField()
-    
+    buyer = serializers.SerializerMethodField()
+
     class Meta:
         model = Cart
         fields = '__all__'
 
+    def get_buyer(self, obj):
+        return obj.get_buyer()
+    
     def get_total(self, obj):
         return obj.total_to_pay()
     

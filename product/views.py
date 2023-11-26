@@ -2,7 +2,6 @@ from django.shortcuts import render
 from rest_framework import status
 import json
 # Create your views here.
-from django.shortcuts import render
 from .models import Category, Product, Cart, CartItem, Promocode
 from .serializers import ProductSerializer, CategorySerializer, CartSerializer, CartItemSerializer
 # from django.views.decorators.csrf import csrf_exempt
@@ -12,6 +11,7 @@ from rest_framework.parsers import JSONParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.http import JsonResponse
+from django.contrib.auth.models import User
 
 
 @api_view(['GET', 'POST'])
@@ -114,3 +114,21 @@ def update_promo(request, id=0):
             cart.save()
         return Response(CartSerializer(cart).data)
     return JsonResponse({})
+
+@api_view(["GET"])
+# @authentication_classes([JWTAuthentication])
+# @permission_classes([IsAuthenticated])
+def get_user_cart(request, id=0):
+    already_cart = request.GET.get('cart_id', 0)
+    myuser = User.objects.filter(pk = id).first()
+    cart = myuser.cart_set.all().filter(is_paid = False)
+    if cart:
+        cart = cart.first()
+    else:
+        cart = Cart.objects.filter(pl=already_cart).first() if already_cart else Cart()
+        cart.buyer = myuser
+        cart.save()
+    if cart:
+        return Response(CartSerializer(cart).data)
+    else:
+        return Response(status=status.HTTP_404_NOT_FOUND)
