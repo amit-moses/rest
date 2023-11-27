@@ -115,12 +115,13 @@ def update_promo(request, id=0):
         return Response(CartSerializer(cart).data)
     return JsonResponse({})
 
+
 @api_view(["GET"])
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
-def get_user_cart(request, id=0):
+def get_user_cart(request):
     already_cart = request.GET.get('cart_id', 0)
-    myuser = User.objects.filter(pk = id).first()
+    myuser = request.user
     cart = myuser.cart_set.all().filter(is_paid = False)
     if cart:
         cart = cart.order_by('-id').first()
