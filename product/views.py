@@ -86,14 +86,15 @@ def cart(request, id=0):
     elif id == 0:
         cart = Cart()
         cart.save()
-
-    if request.method == 'PUT':
+ 
+    valid = request.user == cart.buyer or request.user.id == cart.buyer
+    if request.method == 'PUT' and valid:
         cart.updatecart(params=request.data)
 
-    elif request.method == 'DELETE':
+    elif request.method == 'DELETE' and valid:
         cart.deleteitem()
 
-    if cart:
+    if cart and valid:
         return Response(CartSerializer(cart).data)
     else:
         return Response(status=status.HTTP_404_NOT_FOUND)
@@ -106,14 +107,16 @@ def update_promo(request, id=0):
     promocode = Promocode.objects.filter(code=promo).filter(used=False)
     if cart:
         cart = cart.first()
-        if promo == -1:
+        valid = request.user == cart.buyer or request.user.id == cart.buyer
+        if promo == -1 and valid:
             cart.promocode = None
             cart.save()
-        elif promocode:
+        elif promocode and valid:
             cart.promocode = promocode.first()
             cart.save()
-        return Response(CartSerializer(cart).data)
-    return JsonResponse({})
+        if valid:
+            return Response(CartSerializer(cart).data)
+    return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(["GET"])
