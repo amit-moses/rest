@@ -83,4 +83,6 @@ class CartItem(models.Model):
 
     def get_total(self):
         rtn = self.quantity * self.product.price
+        if rtn < 0:
+            self.delete()
         return rtn if 0<rtn else 0
