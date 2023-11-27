@@ -1,9 +1,7 @@
 from django.shortcuts import render
 from rest_framework import status
-import json
-# Create your views here.
 from .models import Category, Product, Cart, CartItem, Promocode
-from .serializers import ProductSerializer, CategorySerializer, CartSerializer, CartItemSerializer
+from .serializers import ProductSerializer, CategorySerializer, CartSerializer, UserSerializer, CartItemSerializer
 # from django.views.decorators.csrf import csrf_exempt
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
@@ -143,3 +141,19 @@ def get_user_cart(request):
         return Response(CartSerializer(cart).data)
     else:
         return Response(status=status.HTTP_404_NOT_FOUND)
+    
+
+@api_view(['POST'])
+def register(request):
+    data = JSONParser().parse(request)
+    user = User.objects.create_user(
+            username=data.get("username"),
+            email=data.get("email"),
+            password=data.get("password")
+        )
+    try:
+        user.save()
+    except Exception as e:
+        return Response(e, status=400)
+    return Response(UserSerializer(user).data)
+    
