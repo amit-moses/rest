@@ -161,4 +161,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),  # Set the access token lifetime to 1 hour
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),  # Set the refresh token lifetime to 7 day
+    "TOKEN_OBTAIN_SERIALIZER": "product.serializers.MyTokenObtainPairSerializer",
 }
