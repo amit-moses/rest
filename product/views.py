@@ -76,16 +76,33 @@ def categories(request):
 
 
 @api_view(["PUT", "GET", "DELETE"])
+# @authentication_classes([JWTAuthentication])
 def cart(request, id=0):
-    cart = Cart.objects.filter(pk=id)
+    cart = None
+    if request.user.id:
+        my_cart = request.user.cart_set.all().order_by('-id').filter(is_paid = False)
+        if my_cart:
+            if my_cart.first().cartitem.all():
+                cart = my_cart.first()
     if cart:
         cart = cart.first()
+        print(request.user, cart.buyer)
+        if not cart.buyer and request.user.id and request.user != cart.buyer:
+            cart.buyer = request.user
+            cart.save()
         cart.promo_update()
+    else: 
+        cart = Cart.objects.filter(pk=id)
+    if cart:
+        cart = cart.first()
     elif id == 0:
         cart = Cart()
+        if request.user.id:
+            cart.buyer = request.user
         cart.save()
- 
-    valid = request.user == cart.buyer or request.user.id == cart.buyer
+
+
+    valid = True
     if request.method == 'PUT' and valid:
         cart.updatecart(params=request.data)
 
@@ -117,30 +134,30 @@ def update_promo(request, id=0):
     return Response(status=status.HTTP_404_NOT_FOUND)
 
 
-@api_view(["GET"])
-@authentication_classes([JWTAuthentication])
-@permission_classes([IsAuthenticated])
-def get_user_cart(request):
-    already_cart = request.GET.get('cart_id', 0)
-    myuser = request.user
-    cart = myuser.cart_set.all().filter(is_paid = False)
-    if cart:
-        cart = cart.order_by('-id').first()
-        if not cart.cartitem.all() and already_cart:
-            btd = Cart.objects.filter(pk=already_cart)
-            if btd: 
-                cart.delete()
-                cart = btd.first()
-                cart.buyer = myuser
-                cart.save()
-    else:
-        cart = Cart.objects.filter(pk=already_cart).first() if already_cart else Cart()
-        cart.buyer = myuser
-        cart.save()
-    if cart:
-        return Response(CartSerializer(cart).data)
-    else:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+# @api_view(["GET"])
+# @authentication_classes([JWTAuthentication])
+# @permission_classes([IsAuthenticated])
+# def get_user_cart(request):
+#     already_cart = request.GET.get('cart_id', 0)
+#     myuser = request.user
+#     cart = myuser.cart_set.all().filter(is_paid = False)
+#     if cart:
+#         cart = cart.order_by('-id').first()
+#         if not cart.cartitem.all() and already_cart:
+#             btd = Cart.objects.filter(pk=already_cart)
+#             if btd: 
+#                 cart.delete()
+#                 cart = btd.first()
+#                 cart.buyer = myuser
+#                 cart.save()
+#     else:
+#         cart = Cart.objects.filter(pk=already_cart).first() if already_cart else Cart()
+#         cart.buyer = myuser
+#         cart.save()
+#     if cart:
+#         return Response(CartSerializer(cart).data)
+#     else:
+#         return Response(status=status.HTTP_404_NOT_FOUND)
     
 
 @api_view(['POST'])

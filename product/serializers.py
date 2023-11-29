@@ -68,5 +68,8 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
+        cart = user.cart_set.all().filter(is_paid = False)
         token['username'] = user.username
+        token['is_staff'] = user.is_staff
+        token['cart_id'] = cart.order_by('-id').first().id if cart else 0
         return token
