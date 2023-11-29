@@ -1,24 +1,22 @@
 from django.shortcuts import render
 from rest_framework import status
 from .models import Category, Product, Cart, CartItem, Promocode
-from .serializers import ProductSerializer, CategorySerializer, CartSerializer, UserSerializer, CartItemSerializer
+from .serializers import PromoSerializer, ProductSerializer, CategorySerializer, CartSerializer, UserSerializer, CartItemSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.parsers import JSONParser
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.contrib.auth.models import User
 
 
 @api_view(['GET', 'POST'])
-# @authentication_classes([JWTAuthentication])
-# @permission_classes([IsAuthenticated])
 def add_get_all(request):
     if request.method == 'GET':
         search = request.GET.get('search')
         maxprice = request.GET.get('maxprice')
         category_filter = int(request.GET.get('category', 0))
-        all_products = Product.objects.all()
+        all_products = Product.objects.all().order_by('id')
         if category_filter:
             all_products = all_products.filter(category=category_filter)
         # search all product that name contains search parameter
@@ -34,13 +32,17 @@ def add_get_all(request):
     elif request.method == 'POST':
         data = JSONParser().parse(request)
         serializer = ProductSerializer(data=data)
+        
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=201)
+        print(serializer.error_messages)
         return Response(serializer.errors, status=400)
 
 
 @api_view(["PUT", "GET", "DELETE"])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAdminUser])
 def one_prod(request, id):
     product = Product.objects.filter(pk=id)
     if product:
@@ -63,14 +65,89 @@ def one_prod(request, id):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-@api_view()
+@api_view(['GET', 'POST'])
 def categories(request):
-    search = request.GET.get('search')
-    all_categories = Category.objects.all()
-    if search:
-        all_categories = all_categories.filter(name__contains=search)
-    all_categories_json = CategorySerializer(all_categories, many=True).data
-    return Response(all_categories_json)
+    if request.method == 'GET':
+        all_category = Category.objects.all().order_by('id')
+        all_categories_json = CategorySerializer(all_category, many=True).data
+        return Response(all_categories_json)
+
+    elif request.method == 'POST':
+        valid = request.user.is_staff if request.user.id else False
+        data = JSONParser().parse(request)
+        serializer = CategorySerializer(data=data)
+        if serializer.is_valid() and valid:
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
+
+
+@api_view(["PUT", "GET", "DELETE"])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAdminUser])
+def one_pro(request, id):
+    promocode = Promocode.objects.filter(pk=id)
+    if promocode:
+        promocode = promocode.first()
+    else:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        return Response(PromoSerializer(promocode).data)
+
+    elif request.method == 'PUT':
+        serializer = PromoSerializer(promocode, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        promocode.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+@api_view(['GET', 'POST'])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAdminUser])
+def promocodes(request):
+    if request.method == 'GET':
+        all_promo = Promocode.objects.all().order_by('id')
+        all_categories_json = PromoSerializer(all_promo, many=True).data
+        return Response(all_categories_json)
+
+    elif request.method == 'POST':
+        data = JSONParser().parse(request)
+        serializer = PromoSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
+
+
+@api_view(["PUT", "GET", "DELETE"])
+def one_cat(request, id):
+    category = Category.objects.filter(pk=id)
+    if category:
+        category = category.first()
+    else:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        return Response(CategorySerializer(category).data)
+
+    elif request.method == 'PUT':
+        serializer = CategorySerializer(category, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        category.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+
+
 
 
 @api_view(["PUT", "GET", "DELETE"])
