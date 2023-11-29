@@ -59,12 +59,7 @@ MY_URL = 'shop-rest.onrender.com/'
 #add the urls to give access !!!!
 ALLOWED_HOSTS = ['shop-rest.onrender.com', '127.0.0.1']
 CORS_ALLOWED_ORIGINS = [
-"http://127.0.0.1:5501",
-"http://127.0.0.1:5500",
-"http://localhost:3000",
-"https://amit-moses.github.io",
-"https://shop-react.onrender.com",
-"https://myreactshop.vercel.app"
+"https://shop-react.onrender.com"
 ]
 
 REST_FRAMEWORK = {
