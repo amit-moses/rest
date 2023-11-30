@@ -214,6 +214,7 @@ def get_user_cart(request):
         cart.buyer = myuser
         cart.save()
     if cart:
+        cart.promo_update()
         return Response(CartSerializer(cart).data)
     else:
         return Response(status=status.HTTP_404_NOT_FOUND)
