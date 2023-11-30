@@ -43,7 +43,7 @@ def add_get_all(request):
 @api_view(["PUT", "GET", "DELETE"])
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAdminUser])
-def one_prod(request, id):
+def one_product(request, id):
     product = Product.objects.filter(pk=id)
     if product:
         product = product.first()
@@ -85,7 +85,7 @@ def categories(request):
 @api_view(["PUT", "GET", "DELETE"])
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAdminUser])
-def one_pro(request, id):
+def one_promocode(request, id):
     promocode = Promocode.objects.filter(pk=id)
     if promocode:
         promocode = promocode.first()
@@ -125,7 +125,7 @@ def promocodes(request):
 
 
 @api_view(["PUT", "GET", "DELETE"])
-def one_cat(request, id):
+def one_category(request, id):
     category = Category.objects.filter(pk=id)
     if category:
         category = category.first()
