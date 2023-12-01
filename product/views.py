@@ -124,6 +124,15 @@ def promocodes(request):
         return Response(serializer.errors, status=400)
 
 
+@api_view(['GET'])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAdminUser])
+def get_all_carts(request):
+    all_carts = Cart.objects.filter(cartitem__isnull=False).order_by('-id').all()
+    all_carts_json = CartSerializer(all_carts, many=True).data
+    return Response(all_carts_json)
+
+
 @api_view(["PUT", "GET", "DELETE"])
 def one_category(request, id):
     category = Category.objects.filter(pk=id)
@@ -151,7 +160,7 @@ def one_category(request, id):
 
 
 @api_view(["PUT", "GET", "DELETE"])
-def cart(request, id=0):
+def cart(request, id):
     cart = Cart.objects.filter(pk=id)
     if cart:
         cart = cart.first()

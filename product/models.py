@@ -51,7 +51,8 @@ class Cart(models.Model):
         self.cartitem.all().delete()
 
     def get_buyer(self):
-        return self.buyer.id if self.buyer else None
+        return self.buyer.username if self.buyer else None
+        # return self.buyer.id if self.buyer else None
     
     def promo_update(self): 
         if self.promocode:
