@@ -1,14 +1,26 @@
 from rest_framework import serializers
 from .models import Category, Product, CartItem, Cart, Promocode
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
+    carts = serializers.SerializerMethodField()
+    applied = serializers.SerializerMethodField()
     class Meta:
         model = User
-        fields = ('username', 'password', 'email', 'first_name', 'last_name')
+        fields = ('username', 'password', 'email', 'first_name', 'last_name', 'carts', 'applied', 'last_login','is_staff')
+    
+    def get_carts(self, obj):
+        return len(obj.cart_set.filter(cartitem__isnull=False).all())
+    
+    def get_applied(self, obj):
+        return obj.date_joined
+    
+    def get_last_login(self, obj):
+        return obj.last_login
 
     
 class ProductSerializer(serializers.ModelSerializer):
@@ -68,6 +80,9 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
+
+        user.last_login = timezone.now()
+        user.save()
         cart = user.cart_set.all().filter(is_paid = False)
         token['username'] = user.username
         token['is_staff'] = user.is_staff

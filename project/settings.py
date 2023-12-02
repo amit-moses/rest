@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 # Application definition
 
@@ -57,8 +57,11 @@ MIDDLEWARE = [
 
 MY_URL = 'shop-rest.onrender.com/'
 #add the urls to give access !!!!
-ALLOWED_HOSTS = ['shop-rest.onrender.com', '127.0.0.1']
+ALLOWED_HOSTS = ['shop-rest.onrender.com']
 CORS_ALLOWED_ORIGINS = ["https://shop-react.onrender.com"]
+
+# ALLOWED_HOSTS = ['shop-rest.onrender.com', '127.0.0.1']
+# CORS_ALLOWED_ORIGINS = ["https://shop-react.onrender.com", "http://localhost:3000"]
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -156,3 +159,15 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),  # Set the refresh token lifetime to 7 day
     "TOKEN_OBTAIN_SERIALIZER": "product.serializers.MyTokenObtainPairSerializer",
 }
+
+
+
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_FILE_PATH = "sent_emails"
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = os.environ.get('EMAIL')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD_16')
+DEFAULT_FROM_EMAIL = os.environ.get('EMAIL')

@@ -9,6 +9,9 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.contrib.auth.models import User
 
+from django.conf import settings
+from django.core.mail import EmailMessage, get_connection
+
 
 @api_view(['GET', 'POST'])
 def add_get_all(request):
@@ -133,7 +136,10 @@ def get_all_carts(request):
     return Response(all_carts_json)
 
 
+
 @api_view(["PUT", "GET", "DELETE"])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAdminUser])
 def one_category(request, id):
     category = Category.objects.filter(pk=id)
     if category:
@@ -154,9 +160,6 @@ def one_category(request, id):
     elif request.method == 'DELETE':
         category.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
-
-
 
 
 @api_view(["PUT", "GET", "DELETE"])
@@ -242,3 +245,57 @@ def register(request):
     except Exception as e:
         return Response(e, status=400)
     return Response(UserSerializer(user).data)
+
+
+@api_view(["GET","POST",'PUT'])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAdminUser])
+def customers(request):
+    if(request.method == 'GET'):
+        customers = User.objects.order_by('-id').all()
+        customers_json = UserSerializer(customers, many=True).data
+        return Response(customers_json)
+    
+    elif(request.method == 'PUT'):
+        data = JSONParser().parse(request)
+        all_user_to_del = data.get('deluser')
+        users = [one_user.get('username') for one_user in all_user_to_del]
+        print(users)
+        for u_name in users:
+            userdel = User.objects.filter(username=u_name)
+            if userdel:
+                userdel.first().delete()
+        return Response({"users":users})
+    
+    elif(request.method == 'POST'):
+        data = JSONParser().parse(request)
+        all_user_to_send = data.get('params').get('to_mail')
+        title = data.get('params').get('title_mail')
+        message = data.get('params').get('message_mail')
+        setmessage = ''
+        emails = [one_user.get('email') for one_user in all_user_to_send]
+        for line in message.split('\n'):
+            setmessage+= f'<p>{line}</p>'
+        try: 
+            send_email(to_email_lst=emails, mysubject=title, mymessage=setmessage)
+        except Exception as e:
+            return Response(e, status=400)
+        return Response(status=201)
+
+
+def send_email(to_email_lst, mysubject, mymessage):  
+    with get_connection(  
+        host=settings.EMAIL_HOST, 
+    port=settings.EMAIL_PORT,  
+    username=settings.EMAIL_HOST_USER, 
+    password=settings.EMAIL_HOST_PASSWORD, 
+    use_tls=settings.EMAIL_USE_TLS  
+    ) as connection:  
+        email_from = settings.EMAIL_HOST_USER  
+        recipient_list = to_email_lst 
+        print(mysubject, '99999999999999999999999999999999999999999999999999999999999999')
+        html_content = '<html lang="en"><body style="margin: 0; padding: 0; font-family: sans-serif; background-color: #f4f4f4;"> <div style="width: 100%; max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; box-sizing: border-box;"> <div style="background-color: #3498db; padding: 10px; text-align: center;"> <a style="color: white;" href="https://shop-react.onrender.com/"> <img src="https://shop-react.onrender.com/logo192.png" alt="" style="width: 30px; height: 30px; object-fit: contain;"> React-Shop </a> </div> '+mymessage+' </div> </div></body></html>'
+        email = EmailMessage(mysubject, html_content, email_from, recipient_list, connection=connection)
+        email.content_subtype = 'html'  # Set the content type to HTML
+        # Send the email
+        email.send()

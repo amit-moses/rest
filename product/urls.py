@@ -12,6 +12,7 @@ urlpatterns = [
     path('promo/', views.promocodes, name="promocodes"),
     path('promo/<int:id>/', views.one_promocode, name="one_promocode"),
     path('usercart/', views.get_user_cart, name="usercart"),
-    path('register/', views.register, name="register"),  
+    path('register/', views.register, name="register"), 
+    path('customers/', views.customers, name="customers"),  
 ]
 
