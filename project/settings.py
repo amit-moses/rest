@@ -152,7 +152,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-MEDIA_ROOT = 'static/' 
+# MEDIA_ROOT = 'static/' 
 
 if not DEBUG:
     # Tell Django to copy statics to the `staticfiles` directory
