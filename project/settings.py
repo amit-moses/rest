@@ -41,15 +41,14 @@ INSTALLED_APPS = [
     'rest_framework',
     'product',
     'rest_framework_simplejwt',
-    'corsheaders'  # important to rest !!!!
+    'corsheaders' #important to rest !!!!
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    # added this line after pip !!!! ----  python -m pip install django-cors-headers
-    "corsheaders.middleware.CorsMiddleware",
+    "corsheaders.middleware.CorsMiddleware", #added this line after pip !!!! ----  python -m pip install django-cors-headers
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -58,7 +57,7 @@ MIDDLEWARE = [
 ]
 
 MY_URL = 'shop-rest.onrender.com/'
-# add the urls to give access !!!!
+#add the urls to give access !!!!
 ALLOWED_HOSTS = ['shop-rest.onrender.com']
 CORS_ALLOWED_ORIGINS = ["https://shop-react.onrender.com"]
 
@@ -103,14 +102,16 @@ WSGI_APPLICATION = 'project.wsgi.application'
 # }
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'shopdb_yve2',
-        'USER': 'amit',
-        'PASSWORD': os.environ.get('DB_PASSWORD'),
-        'HOST': 'dpg-clg69gef27hc739h1pi0-a.frankfurt-postgres.render.com',
-        'PORT': '5432',
-    }
+           'ENGINE': 'django.db.backends.postgresql_psycopg2',
+           'NAME': 'shopdb_yve2',
+           'USER': 'amit',
+           'PASSWORD': os.environ.get('DB_PASSWORD') ,
+           'HOST': 'dpg-clg69gef27hc739h1pi0-a.frankfurt-postgres.render.com',       
+           'PORT': '5432',
+       }
 }
+
+
 
 
 # Password validation
@@ -147,14 +148,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = 'static/'
+
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
-
-MEDIA_ROOT = BASE_DIR / 'media'
-MEDIA_URL = '/media/'
-
+MEDIA_ROOT = 'static/' 
 if not DEBUG:
     # Tell Django to copy statics to the `staticfiles` directory
     # in your application directory on Render.
@@ -164,18 +163,19 @@ if not DEBUG:
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SIMPLE_JWT = {
-    # Set the access token lifetime to 1 hour
-    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
-    # Set the refresh token lifetime to 7 day
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),  # Set the access token lifetime to 1 hour
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),  # Set the refresh token lifetime to 7 day
     "TOKEN_OBTAIN_SERIALIZER": "product.serializers.MyTokenObtainPairSerializer",
 }
+
+
 
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
