@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 # Application definition
 
@@ -57,11 +57,11 @@ MIDDLEWARE = [
 
 MY_URL = 'shop-rest.onrender.com/'
 #add the urls to give access !!!!
-ALLOWED_HOSTS = ['shop-rest.onrender.com']
-CORS_ALLOWED_ORIGINS = ["https://shop-react.onrender.com"]
+# ALLOWED_HOSTS = ['shop-rest.onrender.com']
+# CORS_ALLOWED_ORIGINS = ["https://shop-react.onrender.com"]
 
-# ALLOWED_HOSTS = ['shop-rest.onrender.com', '127.0.0.1']
-# CORS_ALLOWED_ORIGINS = ["https://shop-react.onrender.com", "http://localhost:3000"]
+ALLOWED_HOSTS = ['shop-rest.onrender.com', '127.0.0.1']
+CORS_ALLOWED_ORIGINS = ["https://shop-react.onrender.com", "http://localhost:3000"]
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -148,6 +148,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+MEDIA_ROOT = 'static/' 
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

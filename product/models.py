@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
 
+
 class Category(models.Model):
     name = models.CharField(max_length=100, null=False)
     description = models.CharField(max_length=200)
@@ -14,10 +15,15 @@ class Product(models.Model):
     name = models.CharField(max_length=100, null=False)
     price = models.DecimalField(max_digits=16, decimal_places=2)
     stock = models.IntegerField(default=0)
-    image = models.CharField(max_length=300, null=False, default='https://t4.ftcdn.net/jpg/04/73/25/49/360_F_473254957_bxG9yf4ly7OBO5I0O5KABlN930GwaMQz.jpg')
+    # image = models.CharField(max_length=300, null=False, default='https://t4.ftcdn.net/jpg/04/73/25/49/360_F_473254957_bxG9yf4ly7OBO5I0O5KABlN930GwaMQz.jpg')
+    image = models.ImageField(upload_to='products_images', default='products_images/default.jpg')
+    
 
     def __str__(self):
         return f'{self.name}'
+    
+
+        
     
 class Promocode(models.Model):
     code = models.CharField(max_length=100, null=True, default=None)
@@ -85,3 +91,9 @@ class CartItem(models.Model):
         if rtn < 0:
             self.delete()
         return rtn if 0<rtn else 0
+
+
+
+
+
+

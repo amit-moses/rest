@@ -33,14 +33,12 @@ def add_get_all(request):
         return Response(all_products_json)
 
     elif request.method == 'POST':
-        data = JSONParser().parse(request)
-        serializer = ProductSerializer(data=data)
-        
+        serializer = ProductSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=201)
         print(serializer.error_messages)
-        return Response(serializer.errors, status=400)
+        return Response(status=400)
 
 
 @api_view(["PUT", "GET", "DELETE"])
