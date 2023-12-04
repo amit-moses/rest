@@ -32,7 +32,7 @@ def add_get_all(request):
         all_products_json = ProductSerializer(all_products, many=True).data
         return Response(all_products_json)
 
-    elif request.method == 'POST':
+    elif request.method == 'POST'and (request.user.is_staff if request.user else False):
         serializer = ProductSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
