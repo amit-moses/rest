@@ -41,6 +41,23 @@ def add_get_all(request):
         return Response(status=400)
 
 
+@api_view(['GET', 'POST'])
+def categories(request):
+    if request.method == 'GET':
+        all_category = Category.objects.all().order_by('id')
+        all_categories_json = CategorySerializer(all_category, many=True).data
+        return Response(all_categories_json)
+
+    elif request.method == 'POST':
+        valid = request.user.is_staff if request.user.id else False
+        data = JSONParser().parse(request)
+        serializer = CategorySerializer(data=data)
+        if serializer.is_valid() and valid:
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
+    
+
 @api_view(["PUT", "GET", "DELETE"])
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAdminUser])
@@ -64,23 +81,6 @@ def one_product(request, id):
     elif request.method == 'DELETE':
         product.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-@api_view(['GET', 'POST'])
-def categories(request):
-    if request.method == 'GET':
-        all_category = Category.objects.all().order_by('id')
-        all_categories_json = CategorySerializer(all_category, many=True).data
-        return Response(all_categories_json)
-
-    elif request.method == 'POST':
-        valid = request.user.is_staff if request.user.id else False
-        data = JSONParser().parse(request)
-        serializer = CategorySerializer(data=data)
-        if serializer.is_valid() and valid:
-            serializer.save()
-            return Response(serializer.data, status=201)
-        return Response(serializer.errors, status=400)
 
 
 @api_view(["PUT", "GET", "DELETE"])
@@ -107,6 +107,33 @@ def one_promocode(request, id):
         promocode.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
+
+@api_view(["PUT", "GET", "DELETE"])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAdminUser])
+def one_category(request, id):
+    category = Category.objects.filter(pk=id)
+    if category:
+        category = category.first()
+    else:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        return Response(CategorySerializer(category).data)
+
+    elif request.method == 'PUT':
+        serializer = CategorySerializer(category, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        category.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+
 @api_view(['GET', 'POST'])
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAdminUser])
@@ -132,32 +159,6 @@ def get_all_carts(request):
     all_carts = Cart.objects.filter(cartitem__isnull=False).order_by('-id').all()
     all_carts_json = CartSerializer(all_carts, many=True).data
     return Response(all_carts_json)
-
-
-
-@api_view(["PUT", "GET", "DELETE"])
-@authentication_classes([JWTAuthentication])
-@permission_classes([IsAdminUser])
-def one_category(request, id):
-    category = Category.objects.filter(pk=id)
-    if category:
-        category = category.first()
-    else:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'GET':
-        return Response(CategorySerializer(category).data)
-
-    elif request.method == 'PUT':
-        serializer = CategorySerializer(category, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    elif request.method == 'DELETE':
-        category.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(["PUT", "GET", "DELETE"])
@@ -291,7 +292,6 @@ def send_email(to_email_lst, mysubject, mymessage):
     ) as connection:  
         email_from = settings.EMAIL_HOST_USER  
         recipient_list = to_email_lst 
-        print(mysubject, '99999999999999999999999999999999999999999999999999999999999999')
         html_content = '<html lang="en"><body style="margin: 0; padding: 0; font-family: sans-serif; background-color: #f4f4f4;"> <div style="width: 100%; max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; box-sizing: border-box;"> <div style="background-color: #3498db; padding: 10px; text-align: center;"> <a style="color: white;" href="https://shop-react.onrender.com/"> <img src="https://shop-react.onrender.com/logo192.png" alt="" style="width: 30px; height: 30px; object-fit: contain;"> React-Shop </a> </div> '+mymessage+' </div> </div></body></html>'
         email = EmailMessage(mysubject, html_content, email_from, recipient_list, connection=connection)
         email.content_subtype = 'html'  # Set the content type to HTML
