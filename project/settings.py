@@ -41,9 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'product',
     'rest_framework_simplejwt',
-    'corsheaders', #important to rest !!!!
-    # 'whitenoise.runserver_nostatic'
-
+    'corsheaders' #important to rest !!!!
 ]
 
 MIDDLEWARE = [
@@ -151,9 +149,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
-# STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-# MEDIA_ROOT = 'static/' 
 
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+MEDIA_ROOT = 'static/' 
 if not DEBUG:
     # Tell Django to copy statics to the `staticfiles` directory
     # in your application directory on Render.
