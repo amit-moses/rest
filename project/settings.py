@@ -57,11 +57,11 @@ MIDDLEWARE = [
 
 MY_URL = 'shop-rest.onrender.com/'
 #add the urls to give access !!!!
-ALLOWED_HOSTS = ['shop-rest.onrender.com']
-CORS_ALLOWED_ORIGINS = ["https://shop-react.onrender.com"]
+# ALLOWED_HOSTS = ['shop-rest.onrender.com']
+# CORS_ALLOWED_ORIGINS = ["https://shop-react.onrender.com"]
 
-# ALLOWED_HOSTS = ['shop-rest.onrender.com', '127.0.0.1']
-# CORS_ALLOWED_ORIGINS = ["https://shop-react.onrender.com", "http://localhost:3000"]
+ALLOWED_HOSTS = ['shop-rest.onrender.com', '127.0.0.1']
+CORS_ALLOWED_ORIGINS = ["https://shop-react.onrender.com", "http://localhost:3000"]
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -98,7 +98,7 @@ WSGI_APPLICATION = 'project.wsgi.application'
 #         'ENGINE': 'django.db.backends.sqlite3',
 #         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
-# }
+}
 DATABASES = {
     'default': {
            'ENGINE': 'django.db.backends.postgresql_psycopg2',
