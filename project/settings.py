@@ -186,3 +186,9 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = os.environ.get('EMAIL')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD_16')
 DEFAULT_FROM_EMAIL = os.environ.get('EMAIL')
+
+
+import json
+from firebase_admin import credentials,initialize_app
+cred = credentials.Certificate(json.loads(os.environ.get('FIREBASE_CONFIG')))
+initialize_app(cred, {'storageBucket': 'shop-react-a.appspot.com'})

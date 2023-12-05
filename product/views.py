@@ -11,6 +11,25 @@ from django.contrib.auth.models import User
 
 from django.conf import settings
 from django.core.mail import EmailMessage, get_connection
+from datetime import datetime
+
+from firebase_admin import storage
+from datetime import datetime
+
+def upload_image(imagefile, old_image=None):
+    bucket = storage.bucket()
+    mypath ='a'+ str(int(datetime.now().timestamp()))
+    blob = bucket.blob(mypath)  
+    blob.upload_from_file(imagefile,content_type='image/jpg')
+    blob.make_public()
+    if old_image and old_image != 'default':
+        delete_image(old_image)
+    return blob.name 
+
+def delete_image(name):
+    bucket = storage.bucket()
+    blob = bucket.blob(name)
+    blob.delete()
 
 
 @api_view(['GET', 'POST'])
@@ -33,7 +52,10 @@ def add_get_all(request):
         return Response(all_products_json)
 
     elif request.method == 'POST'and (request.user.is_staff if request.user else False):
-        serializer = ProductSerializer(data=request.data, context={'request': request})
+        data = request.data.copy()
+        if data.get('image'):
+            data['image'] = upload_image(imagefile=data['image'])
+        serializer = ProductSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=201)
@@ -72,7 +94,11 @@ def one_product(request, id):
         return Response(ProductSerializer(product).data)
 
     elif request.method == 'PUT':
-        serializer = ProductSerializer(product, data=request.data)
+        data = request.data.copy()
+        if data.get('image'):
+            data['image'] = upload_image(imagefile=data['image'], old_image=product.image)
+ 
+        serializer = ProductSerializer(product, data=data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
