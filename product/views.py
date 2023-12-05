@@ -182,7 +182,7 @@ def promocodes(request):
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAdminUser])
 def get_all_carts(request):
-    all_carts = Cart.objects.filter(cartitem__isnull=False).order_by('-id').all()
+    all_carts = Cart.objects.filter(cartitem__isnull=False).order_by('-id').distinct()
     all_carts_json = CartSerializer(all_carts, many=True).data
     return Response(all_carts_json)
 
