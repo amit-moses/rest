@@ -181,19 +181,7 @@ EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD_16')
 DEFAULT_FROM_EMAIL = os.environ.get('EMAIL')
 
 
+import json
 from firebase_admin import credentials,initialize_app
-FIRE_KEY_CONDIG = {
-  "type": "service_account",
-  "project_id": "shop-react-a",
-  "private_key_id": "e381268f42b48b7843781570c61cb601aef4b08d",
-  "private_key": os.environ.get('FIREBASE_CONFIG'),
-  "client_email": "firebase-adminsdk-uep80@shop-react-a.iam.gserviceaccount.com",
-  "client_id": "111120286957490290322",
-  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-  "token_uri": "https://oauth2.googleapis.com/token",
-  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-uep80%40shop-react-a.iam.gserviceaccount.com",
-  "universe_domain": "googleapis.com"
-}
-cred = credentials.Certificate(FIRE_KEY_CONDIG)
+cred = credentials.Certificate(json.loads(os.environ.get('FIREBASE_CONFIG')))
 initialize_app(cred, {'storageBucket': 'shop-react-a.appspot.com'})
