@@ -102,11 +102,11 @@ WSGI_APPLICATION = 'project.wsgi.application'
 DATABASES = {
     'default': {
            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-           'NAME': 'shopdb_yve2',
+           'NAME': os.environ.get('DB_NAME'),
            'USER': 'amit',
            'PASSWORD': os.environ.get('DB_PASSWORD') ,
-           'HOST': 'dpg-clg69gef27hc739h1pi0-a.frankfurt-postgres.render.com',       
-           'PORT': '5432',
+           'HOST': os.environ.get('DB_CONFIF_PATH'),       
+           'PORT': os.environ.get('DB_PORT'),
        }
 }
 
